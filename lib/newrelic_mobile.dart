@@ -231,14 +231,14 @@ class NewrelicMobile {
     return eventRecorded;
   }
 
-  Future<String> startInteraction(String actionName) async {
+  Future<String?> startInteraction(String actionName) async {
     Config con = getAgentConfiguration();
 
     if (con.interactionTracingEnabled) {
       final Map<String, String> params = <String, String>{
         'actionName': actionName
       };
-      final String interactionId =
+      final String? interactionId =
           await _channel.invokeMethod('startInteraction', params);
       return interactionId;
     } else {
