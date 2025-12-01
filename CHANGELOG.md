@@ -1,3 +1,35 @@
+### 1.1.19
+
+## Enhancements
+
+- Updated the native Android agent to version 7.6.13.
+
+### 1.1.18
+
+## Enhancements
+
+- Updated the native Android agent to version 7.6.12.
+
+### 1.1.17
+
+## Enhancements
+
+- Updated the native Android agent to version 7.6.11.
+- Updated the native iOS agent to version 7.6.0.
+
+### 1.1.16
+
+## Bug Fixes
+
+- Fixed an issue where the `NewRelicNavigationObserver` would crash when handling routes without a `key` parameter, such as bottom sheets and modal dialogs.
+- Resolved navigation tracking failures for routes that don't extend `PageRoute`.
+
+## Enhancements
+
+- Improved type safety in `NewRelicNavigationObserver` by removing all dynamic types.
+- Added support for additional route types including `CupertinoPage` and `NoTransitionPage` from go_router.
+- Refactored navigation observer code for better maintainability and readability.
+
 ### 1.1.15
 
 ## Enhancements
