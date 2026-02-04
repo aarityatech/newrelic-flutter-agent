@@ -240,9 +240,9 @@ class NewrelicMobile {
       final Map<String, String> params = <String, String>{
         'actionName': actionName
       };
-      final String interactionId =
+      final String? interactionId =
           await _channel.invokeMethod('startInteraction', params);
-      return interactionId;
+      return interactionId ?? "";
     } else {
       return "";
     }
