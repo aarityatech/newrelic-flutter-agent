@@ -4,11 +4,12 @@
  */
 
 import 'dart:async';
-import 'dart:io' show HttpOverrides, Platform;
+import 'dart:io' show HttpException, HttpOverrides, Platform, SocketException;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' show ClientException;
 import 'package:newrelic_mobile/config.dart';
 import 'package:newrelic_mobile/loglevel.dart';
 import 'package:newrelic_mobile/network_failure.dart';
@@ -24,6 +25,9 @@ class NewrelicMobile {
   static final NewrelicMobile instance = NewrelicMobile._();
 
   Config? config;
+
+  static const int _maxErrorsPerMinute = 3;
+  final List<DateTime> _errorTimestamps = [];
 
   NewrelicMobile._();
 
@@ -71,8 +75,27 @@ class NewrelicMobile {
         .recordError(errorDetails.exception, errorDetails.stack, isFatal: true);
   }
 
-  void recordError(Object error, StackTrace? stackTrace,
-      {Map<String, dynamic>? attributes, bool isFatal = false}) async {
+  void recordError(
+    Object error,
+    StackTrace? stackTrace, {
+    Map<String, dynamic>? attributes,
+    bool isFatal = false,
+  }) async {
+    final String errorStr = error.toString();
+    final isNetworkError = error is SocketException ||
+        error is HttpException ||
+        error is ClientException ||
+        errorStr.contains("Failed host lookup") ||
+        errorStr.contains("Request aborted") ||
+        errorStr.contains("Connection closed");
+
+    if (isNetworkError) {
+      final now = DateTime.now();
+      _errorTimestamps.removeWhere((t) => now.difference(t).inSeconds >= 60);
+      if (_errorTimestamps.length >= _maxErrorsPerMinute) return;
+      _errorTimestamps.add(now);
+    }
+
     String stackTraceStr = '';
     if (stackTrace != null) {
       if (stackTrace.toString().length > 4096) {
@@ -83,8 +106,8 @@ class NewrelicMobile {
     }
 
     final Map<String, dynamic> params = <String, dynamic>{
-      'exception': error.toString(),
-      'reason': error.toString(),
+      'exception': errorStr,
+      'reason': errorStr,
       'stackTrace': stackTraceStr,
       'stackTraceElements':
           stackTrace != null ? getStackTraceElements(stackTrace) : null,
@@ -95,20 +118,24 @@ class NewrelicMobile {
       params['attributes'] = attributes;
     }
 
-    final Map<String, dynamic> eventParams = Map<String, dynamic>.from(params);
-    if (attributes != null) {
-      for (final String key in attributes.keys) {
-        if (key == 'attributes') {
-          continue;
+    if (!isNetworkError) {
+      final eventParams = Map<String, dynamic>.from(params);
+      if (attributes != null) {
+        for (final String key in attributes.keys) {
+          if (key == 'attributes') {
+            continue;
+          }
+          eventParams[key] = attributes[key];
         }
-        eventParams[key] = attributes[key];
       }
-    }
-    eventParams.remove('stackTraceElements');
-    eventParams.remove('attributes');
 
-    NewrelicMobile.instance
-        .recordCustomEvent("Mobile Dart Errors", eventAttributes: eventParams);
+      eventParams.remove('stackTraceElements');
+      eventParams.remove('attributes');
+      NewrelicMobile.instance.recordCustomEvent(
+        "Mobile Dart Errors",
+        eventAttributes: eventParams,
+      );
+    }
 
     await _channel.invokeMethod('recordError', params);
   }
