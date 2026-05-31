@@ -35,7 +35,7 @@ class NewrelicMobilePlugin : FlutterPlugin, MethodCallHandler {
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
     companion object {
-        private const val AGENT_VERSION = "1.2.1"
+        private const val AGENT_VERSION = "1.2.6"
     }
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, "newrelic_mobile")
@@ -126,7 +126,7 @@ class NewrelicMobilePlugin : FlutterPlugin, MethodCallHandler {
                     NewRelic.withApplicationToken(
                         applicationToken
                     ).withLoggingEnabled(loggingEnabled!!)
-                        .withLogLevel(AgentLog.VERBOSE)
+                        .withLogLevel(LogLevel.valueOf(logLevel ?: "WARN").ordinal)
                         .withApplicationFramework(ApplicationFramework.Flutter, AGENT_VERSION)
                         .start(context)
                 } else {
