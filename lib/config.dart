@@ -15,6 +15,7 @@ class Config {
   final bool httpResponseBodyCaptureEnabled;
   final bool loggingEnabled;
   final bool webViewInstrumentation;
+  final bool nsUrlSessionInstrumentationEnabled;
   final bool printStatementAsEventsEnabled;
   final bool httpInstrumentationEnabled;
   final bool fedRampEnabled;
@@ -36,6 +37,7 @@ class Config {
       this.networkErrorRequestEnabled = true,
       this.networkRequestEnabled = true,
       this.webViewInstrumentation = true,
+      this.nsUrlSessionInstrumentationEnabled = true,
       this.printStatementAsEventsEnabled = true,
       this.httpInstrumentationEnabled = true,
       this.fedRampEnabled = false,

@@ -18,6 +18,7 @@ void main() {
     expect(true, config.offlineStorageEnabled);
     expect(false, config.backgroundReportingEnabled);
     expect(false, config.newEventSystemEnabled);
+    expect(true, config.nsUrlSessionInstrumentationEnabled);
     expect(true, config.collectorAddress.isEmpty);
     expect(LogLevel.WARN, config.logLevel);
   });

@@ -156,6 +156,8 @@ class NewrelicMobile {
       'applicationToken': config.accessToken,
       'dartVersion': Platform.version,
       'webViewInstrumentation': config.webViewInstrumentation,
+      'nsUrlSessionInstrumentationEnabled':
+          config.nsUrlSessionInstrumentationEnabled,
       'analyticsEventEnabled': config.analyticsEventEnabled,
       'crashReportingEnabled': config.crashReportingEnabled,
       'interactionTracingEnabled': config.interactionTracingEnabled,

@@ -88,6 +88,7 @@ void main() {
     'applicationToken': appToken,
     'dartVersion': Platform.version,
     'webViewInstrumentation': true,
+    'nsUrlSessionInstrumentationEnabled': true,
     'analyticsEventEnabled': true,
     'crashReportingEnabled': true,
     'interactionTracingEnabled': true,
@@ -838,6 +839,24 @@ void main() {
 
     params['networkRequestEnabled'] = true;
     params['networkErrorRequestEnabled'] = true;
+  });
+
+  test('agent should start with AppToken with NSURLSession instrumentation disabled',
+      () async {
+    Config config = Config(
+        accessToken: appToken, nsUrlSessionInstrumentationEnabled: false);
+    await NewrelicMobile.instance.startAgent(config);
+
+    params['nsUrlSessionInstrumentationEnabled'] = false;
+
+    expect(methodCalLogs, <Matcher>[
+      isMethodCall(
+        'startAgent',
+        arguments: params,
+      )
+    ]);
+
+    params['nsUrlSessionInstrumentationEnabled'] = true;
   });
 
   test('agent should start with AppToken with analytics disabled', () async {
