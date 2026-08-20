@@ -1,3 +1,36 @@
+### 1.2.11
+
+## Enhancements
+
+- Updated the native Android agent to version 7.8.1.
+- Updated the native iOS agent to version 7.7.6.
+
+### 1.2.10
+
+## Enhancements
+
+- Updated the native Android agent to version 7.8.0.
+- Updated the native iOS agent to version 7.7.5.
+
+### 1.2.9
+
+## Enhancements
+
+- Updated the native iOS agent to version 7.7.4.
+
+### 1.2.8
+
+## Enhancements
+
+- Updated the native Android agent to version 7.7.7.
+- Updated the native iOS agent to version 7.7.3.
+
+### 1.2.7
+
+## Enhancements
+
+- Updated the native Android agent to version 7.7.6.
+
 ### 1.2.6
 
 ## Enhancements
