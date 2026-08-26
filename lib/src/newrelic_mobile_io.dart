@@ -158,6 +158,7 @@ class NewrelicMobile {
       'webViewInstrumentation': config.webViewInstrumentation,
       'nsUrlSessionInstrumentationEnabled':
           config.nsUrlSessionInstrumentationEnabled,
+      'excludedNetworkRequestDomains': config.excludedNetworkRequestDomains,
       'analyticsEventEnabled': config.analyticsEventEnabled,
       'crashReportingEnabled': config.crashReportingEnabled,
       'interactionTracingEnabled': config.interactionTracingEnabled,

@@ -14,6 +14,12 @@ import com.newrelic.agent.android.ApplicationFramework
 import com.newrelic.agent.android.FeatureFlag
 import com.newrelic.agent.android.HttpHeaders
 import com.newrelic.agent.android.NewRelic
+import com.newrelic.agent.android.analytics.AnalyticsAttribute
+import com.newrelic.agent.android.analytics.AnalyticsEvent
+import com.newrelic.agent.android.analytics.EventListener
+import com.newrelic.agent.android.analytics.EventManager
+import com.newrelic.agent.android.analytics.NetworkRequestErrorEvent
+import com.newrelic.agent.android.analytics.NetworkRequestEvent
 import com.newrelic.agent.android.logging.AgentLog
 import com.newrelic.agent.android.logging.LogLevel
 import com.newrelic.agent.android.metric.MetricUnit
@@ -149,6 +155,12 @@ class NewrelicMobilePlugin : FlutterPlugin, MethodCallHandler {
 
                 }
 
+
+                val excludedDomains =
+                    call.argument<List<String>>("excludedNetworkRequestDomains").orEmpty()
+                if (excludedDomains.isNotEmpty()) {
+                    NewRelic.setEventListener(ExcludedDomainEventListener(excludedDomains))
+                }
 
                 NewRelic.setAttribute("DartVersion", dartVersion)
                 StatsEngine.get().inc("Supportability/Mobile/Android/Flutter/Agent/$AGENT_VERSION")
@@ -470,3 +482,43 @@ class NewrelicMobilePlugin : FlutterPlugin, MethodCallHandler {
 }
 
 
+
+/**
+ * Drops MobileRequest/MobileRequestError events for the configured request
+ * domains before they are queued, so third-party SDK traffic is never uploaded.
+ *
+ * Android instruments HTTP by bytecode weaving at build time, so unlike iOS
+ * there is no way to skip capturing those calls; vetoing the event here is the
+ * only hook the agent exposes. Manually reported transactions are unaffected
+ * unless their domain matches.
+ */
+internal class ExcludedDomainEventListener(excludedDomains: List<String>) : EventListener {
+
+    private val excludedDomains = excludedDomains.map { it.lowercase() }
+
+    override fun onEventAdded(event: AnalyticsEvent): Boolean {
+        if (event !is NetworkRequestEvent && event !is NetworkRequestErrorEvent) return true
+
+        val domain = event.attributeSet
+            .firstOrNull { it.name == AnalyticsAttribute.REQUEST_DOMAIN_ATTRIBUTE }
+            ?.stringValue
+            ?.lowercase()
+            ?: return true
+
+        return excludedDomains.none { domain == it || domain.endsWith(".$it") }
+    }
+
+    override fun onEventOverflow(event: AnalyticsEvent): Boolean = true
+
+    override fun onEventEvicted(event: AnalyticsEvent): Boolean = true
+
+    override fun onEventQueueSizeExceeded(currentQueueSize: Int) {}
+
+    override fun onEventQueueTimeExceeded(maxBufferTimeInSec: Int) {}
+
+    override fun onEventFlush() {}
+
+    override fun onStart(eventManager: EventManager) {}
+
+    override fun onShutdown() {}
+}

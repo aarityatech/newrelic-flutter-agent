@@ -19,6 +19,7 @@ void main() {
     expect(false, config.backgroundReportingEnabled);
     expect(false, config.newEventSystemEnabled);
     expect(true, config.nsUrlSessionInstrumentationEnabled);
+    expect(true, config.excludedNetworkRequestDomains.isEmpty);
     expect(true, config.collectorAddress.isEmpty);
     expect(LogLevel.WARN, config.logLevel);
   });

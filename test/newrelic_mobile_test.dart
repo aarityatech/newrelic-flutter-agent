@@ -89,6 +89,7 @@ void main() {
     'dartVersion': Platform.version,
     'webViewInstrumentation': true,
     'nsUrlSessionInstrumentationEnabled': true,
+    'excludedNetworkRequestDomains': <String>[],
     'analyticsEventEnabled': true,
     'crashReportingEnabled': true,
     'interactionTracingEnabled': true,
