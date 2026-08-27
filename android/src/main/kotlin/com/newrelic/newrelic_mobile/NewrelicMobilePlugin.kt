@@ -508,7 +508,10 @@ internal class ExcludedDomainEventListener(excludedDomains: List<String>) : Even
         return excludedDomains.none { domain == it || domain.endsWith(".$it") }
     }
 
-    override fun onEventOverflow(event: AnalyticsEvent): Boolean = true
+    // The remaining callbacks must mirror the agent's own EventManagerImpl
+    // defaults: a true from onEventOverflow means DROP the event, so returning
+    // true here would discard every event queued once the pool is full.
+    override fun onEventOverflow(event: AnalyticsEvent): Boolean = false
 
     override fun onEventEvicted(event: AnalyticsEvent): Boolean = true
 
