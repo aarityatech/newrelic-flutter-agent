@@ -15,6 +15,11 @@ class Config {
   final bool httpResponseBodyCaptureEnabled;
   final bool loggingEnabled;
   final bool webViewInstrumentation;
+  final bool nsUrlSessionInstrumentationEnabled;
+
+  /// Android only: request domains whose MobileRequest/MobileRequestError
+  /// events are dropped before they are queued for upload.
+  final List<String> excludedNetworkRequestDomains;
   final bool printStatementAsEventsEnabled;
   final bool httpInstrumentationEnabled;
   final bool fedRampEnabled;
@@ -36,6 +41,8 @@ class Config {
       this.networkErrorRequestEnabled = true,
       this.networkRequestEnabled = true,
       this.webViewInstrumentation = true,
+      this.nsUrlSessionInstrumentationEnabled = true,
+      this.excludedNetworkRequestDomains = const <String>[],
       this.printStatementAsEventsEnabled = true,
       this.httpInstrumentationEnabled = true,
       this.fedRampEnabled = false,

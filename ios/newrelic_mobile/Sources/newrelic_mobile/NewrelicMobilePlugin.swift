@@ -42,6 +42,9 @@ public class NewrelicMobilePlugin: NSObject, FlutterPlugin {
             if(args?["webViewInstrumentation"] as! Bool == false) {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_WebViewInstrumentation)
             }
+            if(args?["nsUrlSessionInstrumentationEnabled"] as! Bool == false) {
+                NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_NSURLSessionInstrumentation)
+            }
             if(args?["interactionTracingEnabled"] as! Bool == false) {
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_DefaultInteractions)
                 NewRelic.disableFeatures(NRMAFeatureFlags.NRFeatureFlag_InteractionTracing)
