@@ -484,13 +484,9 @@ class NewrelicMobilePlugin : FlutterPlugin, MethodCallHandler {
 
 
 /**
- * Drops MobileRequest/MobileRequestError events for the configured request
- * domains before they are queued, so third-party SDK traffic is never uploaded.
- *
- * Android instruments HTTP by bytecode weaving at build time, so unlike iOS
- * there is no way to skip capturing those calls; vetoing the event here is the
- * only hook the agent exposes. Manually reported transactions are unaffected
- * unless their domain matches.
+ * Drops MobileRequest/MobileRequestError events for the given domains before
+ * they are queued. Android weaves HTTP at build time, so vetoing the event is
+ * the only hook available. Applies to manually reported events too.
  */
 internal class ExcludedDomainEventListener(excludedDomains: List<String>) : EventListener {
 
@@ -508,9 +504,7 @@ internal class ExcludedDomainEventListener(excludedDomains: List<String>) : Even
         return excludedDomains.none { domain == it || domain.endsWith(".$it") }
     }
 
-    // The remaining callbacks must mirror the agent's own EventManagerImpl
-    // defaults: a true from onEventOverflow means DROP the event, so returning
-    // true here would discard every event queued once the pool is full.
+    // Mirrors EventManagerImpl defaults: true from onEventOverflow means DROP.
     override fun onEventOverflow(event: AnalyticsEvent): Boolean = false
 
     override fun onEventEvicted(event: AnalyticsEvent): Boolean = true
