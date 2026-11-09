@@ -1,3 +1,29 @@
+### 1.3.5
+
+## Enhancements
+
+- Updated the native Android agent to version 7.8.5.
+- Updated the native iOS agent to version 7.7.10 for Swift Package Manager. CocoaPods installs stay on 7.7.9 because 7.7.10 is not available on CocoaPods.
+
+### 1.3.4
+
+## Enhancements
+
+- Updated the native Android agent to version 7.8.4.
+- Updated the native iOS agent to version 7.7.9.
+
+### 1.3.3
+
+## Enhancements
+
+- Updated the native iOS agent to version 7.7.8.
+
+### 1.3.2
+
+## Enhancements
+
+- Updated the native Android agent to version 7.8.3.
+
 ### 1.3.1
 
 ## Enhancements
@@ -17,6 +43,10 @@
 - Updated the native iOS agent to version 7.7.6.
 
 ### 1.2.11
+
+## Bug Fixes
+
+- Fixed the iOS bridge hardcoding `andParams: nil`, which silently dropped custom `httpParams` and tracked-header values from `MobileRequest`/`MobileRequestError` events. Android already forwarded params correctly.
 
 ## Enhancements
 
