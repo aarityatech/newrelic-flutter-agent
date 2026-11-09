@@ -26,6 +26,12 @@ class NewrelicMobile {
 
   Config? config;
 
+  /// Consulted before every HTTP transaction is reported, whether it came
+  /// from the HTTP overrides or a manual [noticeHttpTransaction] call.
+  /// Returning false skips it, which lets an app sample its requests.
+  bool Function(String url, String httpMethod, int statusCode)?
+      shouldReportHttpTransaction;
+
   static const int _maxErrorsPerMinute = 3;
   final List<DateTime> _errorTimestamps = [];
 
@@ -347,6 +353,10 @@ class NewrelicMobile {
       Map<String, dynamic>? traceData,
       {Map<String, dynamic>? httpParams,
       String responseBody = ""}) async {
+    if (shouldReportHttpTransaction?.call(url, httpMethod, statusCode) ==
+        false) {
+      return;
+    }
     Map<String, dynamic>? traceAttributes;
     if (config!.distributedTracingEnabled) {
       if (traceData != null && traceData.isNotEmpty) {

@@ -21,6 +21,10 @@ class NewrelicMobile {
 
   Config? config;
 
+  /// Mirrors the native API; nothing is reported on web.
+  bool Function(String url, String httpMethod, int statusCode)?
+      shouldReportHttpTransaction;
+
   NewrelicMobile._();
 
   Future<String?> get platformVersion async {
