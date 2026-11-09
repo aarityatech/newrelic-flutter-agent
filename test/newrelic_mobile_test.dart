@@ -1455,6 +1455,56 @@ void main() {
     ]);
   });
 
+  group('shouldReportHttpTransaction', () {
+    setUp(() {
+      NewrelicMobile.instance.setAgentConfiguration(
+          Config(accessToken: appToken, distributedTracingEnabled: false));
+    });
+
+    tearDown(() {
+      NewrelicMobile.instance.shouldReportHttpTransaction = null;
+    });
+
+    Future<void> notice() => NewrelicMobile.instance.noticeHttpTransaction(
+        url,
+        httpMethod,
+        statusCode,
+        startTime,
+        endTime,
+        bytesSent,
+        bytesReceived,
+        null,
+        responseBody: responseBody,
+        httpParams: httpParams);
+
+    test('skips the transaction when it returns false', () async {
+      NewrelicMobile.instance.shouldReportHttpTransaction = (_, __, ___) {
+        return false;
+      };
+
+      await notice();
+
+      expect(methodCalLogs, isEmpty);
+    });
+
+    test('reports the transaction when it returns true', () async {
+      final seen = <List<Object>>[];
+      NewrelicMobile.instance.shouldReportHttpTransaction =
+          (url, method, status) {
+        seen.add([url, method, status]);
+        return true;
+      };
+
+      await notice();
+
+      expect(seen, [
+        [url, httpMethod, statusCode]
+      ]);
+      expect(
+          methodCalLogs.map((call) => call.method), ['noticeHttpTransaction']);
+    });
+  });
+
   test(
       'test Start of Agent should also start method with collectorAddress and crashCollectorAddress',
       () async {
